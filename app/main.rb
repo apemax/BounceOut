@@ -87,6 +87,8 @@ def tick_game_over_scene args
     args.state.block_down = false
     args.state.ball_dx = 0
     args.state.ball_dy = 0
+    args.state.ball[:x] = 620
+    args.state.ball[:y] = 250
   end
 end
 
