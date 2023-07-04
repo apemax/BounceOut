@@ -47,7 +47,19 @@ def tick_game_scene args
   calc args
   drop_block args
 
-  if args.state.score >= 320
+  if args.inputs.keyboard.p
+    args.state.debug_enabled = true
+  end
+  if args.inputs.keyboard.o
+    args.state.debug_enabled = false
+  end
+    
+
+  if args.state.debug_enabled
+    debug args
+  end
+
+  if args.state.score >= 640
     args.state.end_timer += 1
     if args.state.end_timer == 120
       args.state.next_scene = :game_over_scene
@@ -83,8 +95,6 @@ def tick_game_over_scene args
     args.state.time_minutes = 0
     args.state.end_timer = 0
     args.state.blocks.clear
-    args.state.block_up = 0
-    args.state.block_down = false
     args.state.ball_dx = 0
     args.state.ball_dy = 0
     args.state.ball[:x] = 620
@@ -105,18 +115,20 @@ def defaults args
   args.state.block_width ||= 160
   
   args.state.blocks ||= []
+  args.state.block_hit ||= false
 
-  args.state.block_up ||= 0
-  args.state.block_down ||= false
   args.state.score ||= 0
   args.state.time_seconds   ||= 0
   args.state.time_minutes   ||= 0
   args.state.time_frame     ||= 0
   args.state.end_timer      ||= 0
+
+  args.state.debug_enabled ||= false
 end
 
 def make_blocks args
   args.state.blocks = []
+  # Top blocks
   args.state.blocks += 1.times.map { |n| {x: 0, y: 700, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
   args.state.blocks += 1.times.map { |n| {x: 160, y: 700, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
   args.state.blocks += 1.times.map { |n| {x: 320, y: 700, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
@@ -149,7 +161,46 @@ def make_blocks args
   args.state.blocks += 1.times.map { |n| {x: 800, y: 640, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
   args.state.blocks += 1.times.map { |n| {x: 960, y: 640, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
   args.state.blocks += 1.times.map { |n| {x: 1120, y: 640, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  # bottom blocks
+  args.state.blocks += 1.times.map { |n| {x: 0, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 160, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 320, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 480, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 640, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 800, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 960, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 1120, y: 0, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 0, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 160, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 320, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 480, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 640, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 800, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 960, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 1120, y: 20, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 0, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 160, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 320, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 480, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 640, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 800, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 960, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 1120, y: 40, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 0, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 160, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 320, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 480, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 640, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 800, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 960, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-blue.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  args.state.blocks += 1.times.map { |n| {x: 1120, y: 60, w: args.state.block_width, h: args.state.block_height, path: 'sprites/block-green.png', vel: 0, hit: false, out: false, block_up: 0, Block_down: false} }
+  # Side blocks
   args.state.blocks
+end
+
+def make_bottom_blocks args
+  args.state.blocks = []
+    args.state.blocks
 end
 
 def render args
@@ -271,20 +322,32 @@ end
 def determine_collision_center_box args
   blocks = []
   args.state.blocks.each do |block|
-    if block[:hit] == false and block[:out] == false
+    if block[:hit] == false and block[:out] == false and args.state.block_hit == false
       if block.intersect_rect? args.state.ball
-        if args.state.ball_dy == -1
-        args.state.ball_dy = 1
-        end
-        if args.state.ball_dy == 1
-        args.state.ball_dy = -1
+        case args.state.ball_dy
+        when -1
+          args.state.ball_dy = 1
+        when 1
+          args.state.ball_dy = -1
         end
         block[:hit] = true
+        args.state.block_hit = true
         if block[:out] == false
           args.state.score += 10
         end
       else
       end
     end
+  end
+  if args.state.block_hit == true
+    args.state.block_hit = false
+  end
+end
+
+def debug args
+  args.outputs.labels << { x: 10, y: 300, text: "ball_dx: #{args.state.ball_dx}"}
+  args.outputs.labels << { x: 10, y: 320, text: "ball_dy: #{args.state.ball_dy}"}
+  args.state.blocks.each do |block|
+    args.outputs.labels << { x: 10, y: 340, text: "block hit: #{block[:hit]}"}
   end
 end
